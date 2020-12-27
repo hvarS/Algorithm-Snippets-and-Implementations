@@ -1,66 +1,77 @@
 #include <bits/stdc++.h>
+#define REP(i, n) for (int i = 1; i <= n; i++)
+#define mod 1000000007
+#define pb push_back
+#define ff first
+#define ss second
+#define ii pair<int, int>
+#define vi vector<int>
+#define vii vector<ii>
+#define lli long long int
+#define INF 1000000000
+#define endl '\n'
+const double PI = 3.141592653589793238460;
+typedef std::complex<double> Complex;
+typedef std::valarray<Complex> CArray;
+
 using namespace std;
+vi primes;
+int prime[100001];
 
-#define MAXN 1000007
-typedef long long ll;
-
-// Segmented Sieve is used where we need prime numbers in range L to R  which can be really large but
-// R-L+1 <= 1e6
-
-vector<int> seive(MAXN, 0);
-
-// If seive[i] = 0 , then i + l is a prime number;
-vector<int> primes;
-vector<int> p(1000008, 0);
-
-void primegen()
+void sieve(int maxN)
 {
-    p[0] = 1;
-    p[1] = 1;
-    for (int i = 2; i <= MAXN; i++)
-    {
-        if (p[i] == 0)
+    vi ar(maxN + 1, 0);
+    ar[1] = 1;
+
+    for (int i = 2; i <= maxN; i++)
+        if (ar[i] == 0)
         {
-            primes.push_back(i);
-            for (int j = 2 * i; j <= MAXN; j += i)
-            {
-                p[j] = 1;
-            }
+            for (int j = 2 * i; j <= maxN; j += i)
+                ar[j] = 1;
         }
-    }
-    return;
+
+    REP(i, maxN)
+    if (ar[i] == 0)
+        primes.pb(i);
 }
 
-void generateseive(ll l, ll r)
+void init(int L, int R)
 {
-    if (l == 1)
-        l++;
-    for (auto prime : primes)
-    {
-        if (prime * prime <= r)
+    if (L == 1)
+        L++;
+
+    int maxN = R - L + 1;
+    vi ar(maxN, 0);
+
+    for (lli p : primes)
+        if (p * p <= R)
         {
-            ll starter = (l / prime) * prime;
-            if (starter < l)
-                starter += prime;
-            for (ll j = starter; j <= r; j += prime)
+            int i = (L / p) * p;
+            if (i < L)
+                i += p;
+
+            for (; i <= R; i += p)
             {
-                if (j != prime)
-                    seive[j - l] = 1;
+                if (i != p)
+                    ar[i - L] = 1;
             }
         }
-    }
-    return;
+
+    for (int i = 0; i < maxN; i++)
+        if (ar[i] == 0)
+            cout << L + i << endl;
 }
 
 int main()
 {
-    ll l, r;
-    cin >> l >> r;
-    primegen();
-    generateseive(l, r);
-    for (ll i = 0; i <= r - l; i++)
+    sieve(100000);
+    int t, L, R;
+    cin >> t;
+
+    while (t--)
     {
-        if (seive[i] == 0)
-            cout << i + l << " ";
+        cin >> L >> R;
+        init(L, R);
+        cout << endl;
     }
 }
