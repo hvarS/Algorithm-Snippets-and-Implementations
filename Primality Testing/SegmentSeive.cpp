@@ -10,33 +10,43 @@ typedef long long ll;
 vector<int> seive(MAXN, 0);
 
 // If seive[i] = 0 , then i + l is a prime number;
+vector<int> primes;
+vector<int> p(1000008, 0);
 
-void generateseive(ll l, ll r)
+void primegen()
 {
-    set<int> primes;
-    ll temp = r;
-    for (int i = 2; i * i <= temp; i++)
+    p[0] = 1;
+    p[1] = 1;
+    for (int i = 2; i <= MAXN; i++)
     {
-        if (temp % i == 0)
+        if (p[i] == 0)
         {
-            primes.insert(i);
-            while (temp % i == 0)
+            primes.push_back(i);
+            for (int j = 2 * i; j <= MAXN; j += i)
             {
-                temp /= i;
+                p[j] = 1;
             }
         }
     }
-    if (temp > 1)
-    {
-        primes.insert(temp);
-        temp = 1;
-    }
+    return;
+}
+
+void generateseive(ll l, ll r)
+{
+    if (l == 1)
+        l++;
     for (auto prime : primes)
     {
-        ll starter = ceil((l * 1.0) / prime) * prime;
-        for (ll j = starter; j <= r; j += prime)
+        if (prime * prime <= r)
         {
-            seive[j - l] = 1;
+            ll starter = (l / prime) * prime;
+            if (starter < l)
+                starter += prime;
+            for (ll j = starter; j <= r; j += prime)
+            {
+                if (j != prime)
+                    seive[j - l] = 1;
+            }
         }
     }
     return;
@@ -45,11 +55,12 @@ void generateseive(ll l, ll r)
 int main()
 {
     ll l, r;
-    l = 20;
-    r = 30;
+    cin >> l >> r;
+    primegen();
     generateseive(l, r);
     for (ll i = 0; i <= r - l; i++)
     {
-        cout << seive[i] << " ";
+        if (seive[i] == 0)
+            cout << i + l << " ";
     }
 }
